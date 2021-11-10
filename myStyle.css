@@ -1,0 +1,13 @@
+.field {
+    border: 5px solid black;
+}
+
+.cell {
+    border: 10px solid red;
+}
+
+.snake {
+    width: 1px;
+    height: 1px;
+    border: 1px solid black;
+}
