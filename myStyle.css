@@ -1,13 +1,27 @@
 .field {
+    margin-top: 20px;
     border: 5px solid black;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: darkgrey;
 }
 
 .cell {
-    border: 10px solid red;
+    width: 10px;
+    height: 10px;
+}
+.button {
+    width: 120px;
+    height: 50px;
+    margin-left: 5px;
+}
+.form {
+    display: flex;
+}
+.snakeBody {
+    background-color: green;
 }
 
-.snake {
-    width: 1px;
-    height: 1px;
-    border: 1px solid black;
+.snakeHead {
+    background-color: aqua;
 }
