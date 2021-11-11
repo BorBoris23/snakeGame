@@ -18,6 +18,9 @@
 .form {
     display: flex;
 }
+.fly {
+    background-color: blue;
+}
 .snakeBody {
     background-color: green;
 }
