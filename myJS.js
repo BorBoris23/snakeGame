@@ -1,3 +1,6 @@
+let timer;
+let fly;
+
 function createInput(placeholderMessage, attribute)
 {
     let input = document.createElement('input');
@@ -39,8 +42,6 @@ function createCell(x, y)
 
 function createSnake(snake)
 {
-    // console.log(snake);
-    // console.log(snake.length);
     snake[0].classList.add('snakeHead');
 
     for(let i = 1; i < snake.length; i++) {
@@ -84,30 +85,96 @@ function creteField(width, height)
     }
     field.classList.add('field');
     document.body.appendChild(field);
-    // return field;
 }
 
-function moveSnake(snake)
+let direction = 'right';
+document.addEventListener('keydown', function(event){
+    if(event.key === 'ArrowLeft' && direction !== 'right') {
+        direction = 'left';
+    }
+    if(event.key === 'ArrowRight' && direction !== 'left') {
+        direction = 'right'
+    }
+    if(event.key === 'ArrowUp' && direction !== 'down') {
+        direction = 'up';
+    }
+    if(event.key === 'ArrowDown' && direction !== 'up') {
+        direction = 'down';
+    }
+});
+
+function moveSnake(snake, width, height)
 {
     snake[0].classList.remove('snakeHead');
     let snakeTail =  snake.pop();
     snakeTail.classList.remove('snakeBody');
-    let currentPosX = Number(snake[0].getAttribute('positionX'));
-    let currentPosY = Number(snake[0].getAttribute('positionY'));
-    let newPosX = currentPosX + 1;
-    let newPosY = currentPosY;
-    snake.unshift((document.querySelector('div[positionX="'+newPosX+'"][positionY="'+newPosY+'"]')));
-    createSnake(snake);
 
+    let headPosX = Number(snake[0].getAttribute('positionX'));
+    let headPosY = Number(snake[0].getAttribute('positionY'));
+    let flyPosX = Number(fly.getAttribute('positionX'));
+    let flyPosY = Number(fly.getAttribute('positionY'));
+    let newPosX;
+    let newPosY;
+
+    console.log(direction);
+    if(direction === 'right') {
+        newPosX = headPosX + 1;
+        newPosY = headPosY;
+    }
+    if(direction === 'left') {
+        newPosX = headPosX - 1;
+        newPosY = headPosY;
+    }
+    if(direction === 'down') {
+        newPosX = headPosX;
+        newPosY = headPosY + 1;
+    }
+    if(direction === 'up') {
+        newPosX = headPosX;
+        newPosY = headPosY - 1;
+    }
+    if((headPosX === flyPosX) && (headPosY === flyPosY) ) {
+        eatFly(snake, fly);
+        fly = createFly(width, height);
+    }
+    if(canSnakeCrawl(newPosX, newPosY, width, height) === false) {
+        createSnake(snake);
+        alert('Game Over');
+        clearInterval(timer);
+    } else {
+        snake.unshift((document.querySelector('div[positionX="'+newPosX+'"][positionY="'+newPosY+'"]')));
+        createSnake(snake);
+        if(snake[0].classList.contains('snakeBody')) {
+            alert('Game Over');
+            clearInterval(timer);
+        }
+    }
 }
 function eatFly(snake, fly)
 {
     fly.classList.remove('fly');
     snake[0].classList.remove('snakeHead');
     let newPosX = Number(fly.getAttribute('positionX'));
-    let currentPosY = Number(fly.getAttribute('positionY'));
-    snake.unshift((document.querySelector('div[positionX="'+newPosX+'"][positionY="'+currentPosY+'"]')));
-    createSnake(snake)
+    let newPosY = Number(fly.getAttribute('positionY'));
+    snake.unshift((document.querySelector('div[positionX="'+newPosX+'"][positionY="'+newPosY+'"]')));
+}
+
+function canSnakeCrawl(snakePosX, snakePosY, width, height)
+{
+    let result = true;
+    if(snakePosX === width + 1 ) {
+        result = false;
+    }
+    if(snakePosX === 0 ) {
+        result = false;
+    }
+    if(snakePosY === height + 1 ) {
+        result = false;
+    }
+    if(snakePosY === 0 ) {
+        result = false;
+    }
+    return result;
 }
 
 function startGame()
@@ -127,29 +194,9 @@ function startGame()
         (document.querySelector('div[positionX="'+(posX-2)+'"][positionY="'+posY+'"]')),
         (document.querySelector('div[positionX="'+(posX-3)+'"][positionY="'+posY+'"]')));
     createSnake(snake);
-
-    let fly = createFly(width, height);
-    // let fly = document.querySelector('div[positionX="30"][positionY="25"]');
-
-    let gameIsOver = false;
-    while(!gameIsOver) {
-        moveSnake(snake);
-        let snakePosX = Number(snake[0].getAttribute('positionX'));
-        let snakePosY = Number(snake[0].getAttribute('positionY'));
-        let flyPosX = Number(fly.getAttribute('positionX'));
-        let flyPosY = Number(fly.getAttribute('positionY'));
-        if(snakePosX === flyPosX && snakePosY === flyPosY) {
-            eatFly(snake, fly);
-        }
-        if(snakePosX === width) {
-            alert(123);
-            gameIsOver = true;
-        }
-    }
+    fly = createFly(width, height);
+    timer = setInterval(moveSnake, 80, snake, width, height);
 }
-
-
-
 
 createForm();
 
